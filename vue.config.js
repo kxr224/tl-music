@@ -15,6 +15,13 @@ module.exports = {
                 pathRewrite: {
                     '^/api': ''
                 }
+            },
+            "/taihe-api":{
+                target: "http://music.taihe.com",
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/taihe-api': ''
+                }
             }
         }
     }

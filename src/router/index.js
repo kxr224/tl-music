@@ -23,7 +23,7 @@ const routes = [
             },
             {
                 path: "bill",
-                component: () => import('../views/Bill.vue'),
+                component: () => import('../views/Bill/Bill.vue'),
                 meta: {
                     title: "榜单"
                 }
@@ -49,8 +49,25 @@ const routes = [
                     title: "我的"
                 }
             },
+            {
+                // this.$route.params.type
+                path: "more/:type",
+                name: "moreMusic",
+                component: () => import('../views/MoreMusic.vue'),
+                meta: {
+                    title: "更多音乐"
+                }
+            },
         ]
-    }
+    },
+    {
+        path: "/music-play/:songId",
+        name: "musicPlay",
+        component: () => import('../views/MusicPlay/MusicPlay.vue'),
+        meta: {
+            title: "歌曲播放"
+        }
+    },
     // {
     //     path: '/about',
     //     name: 'About',

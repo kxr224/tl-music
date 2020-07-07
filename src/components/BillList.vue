@@ -1,12 +1,16 @@
 <template>
     <div class="bill-list-container">
-        <h3>{{title}} <span>更多</span></h3>
+        <h3>{{title}}
+            <!--            <router-link tag="span" :to="'/index/more/'+type">更多</router-link>-->
+            <router-link tag="span" :to="{name:'moreMusic',params:{type:type}}">更多</router-link>
+        </h3>
         <ul class="bill-list">
-            <li v-for="item in songList" :key="item.song_id">
+            <router-link tag="li" :to="{name:'musicPlay',params: {songId:item.song_id}}" v-for="item in songList"
+                         :key="item.song_id">
                 <img :src="item.pic_big"
                      alt="">
                 <div>{{item.title}}</div>
-            </li>
+            </router-link>
         </ul>
     </div>
 </template>
@@ -17,6 +21,8 @@
     //  列表： 请求接口获取到这个数据。 传进来的是type，我们在组件内部根据不同的type请求不同榜单的数据
     //  更多： 依赖于type
     //  个数： size， 数字类型的
+    import {getBillList} from "../api/music-api";
+
     export default {
         name: "BillList",
         props: {
@@ -32,16 +38,18 @@
                 default: 6
             }
         },
-        data(){
-          return {
-              songList:[]
-          }
+        data() {
+            return {
+                songList: []
+            }
         },
         created() {
             // 发起接口请求
-            this.$http
-                .get(`/api/v1/restserver/ting?method=baidu.ting.billboard.billList&type=${this.type}&size=${this.size}&offset=0`).then(res=>{
-                this.songList = res.data.song_list;
+            // this.$http
+            //     .get(`/api/v1/restserver/ting?method=baidu.ting.billboard.billList&type=${this.type}&size=${this.size}&offset=0`).then(res => {
+            // })
+            getBillList(this.type, this.size).then(res => {
+                this.songList = res.list;
             })
         }
     }

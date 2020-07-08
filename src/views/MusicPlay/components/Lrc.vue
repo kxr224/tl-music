@@ -1,7 +1,11 @@
 <template>
     <div class="lrc-container">
-        <ul>
-            <li v-for="(item,index) in lrcContent" :key="index">{{item.content}}</li>
+        <ul ref="list">
+            <li v-for="(item,index) in lrcContent" @click="setProcess(item.time)" :key="index"
+                :class="index==active?'active':''"
+            >
+                {{item.content}}
+            </li>
         </ul>
     </div>
 </template>
@@ -9,6 +13,7 @@
 <script>
     // 对于歌词组件来说，需要一个参数的，这个参数就是歌词的地址
     import {getLrc} from "../../../api/music-api";
+    import {mapState} from "vuex";
 
     export default {
         name: "Lrc",
@@ -17,14 +22,21 @@
         },
         data() {
             return {
-                lrcContent: []
+                lrcContent: [],
+                // 当前激活的歌词
+                active: 0,
+                noScroll: false,
+                timeoutId: null
             }
+        },
+        computed: {
+            ...mapState(["currentTime"])
         },
         created() {
             // this.lrcLink
             console.log(this.lrcLink)
             getLrc(this.lrcLink).then(res => {
-                const lrcContent = res.content.split("\n");
+                const lrcContent = res.content.replace(/\r/g, '').split("\n");
 
                 // 判断一下我们这个字符串有没有时间
                 let reg = /\[\d*:\d*\.\d*\]/g;
@@ -57,14 +69,29 @@
                             // 最终的秒数
                             let time = min * 60 + sec;
                             let contentStr = item.replace(reg, "");
-                            this.lrcContent.push({
-                                time,
-                                content: contentStr
-                            })
+                            if (contentStr) {
+                                this.lrcContent.push({
+                                    time,
+                                    content: contentStr
+                                })
+                            }
                         })
                     }
                 })
             })
+        },
+        mounted() {
+            this.$refs.list.addEventListener("touchstart", () => {
+                if (this.timeoutId) {
+                    clearTimeout(this.timeoutId);
+                }
+                this.noScroll = true;
+            });
+            this.$refs.list.addEventListener("touchend", () => {
+                this.timeoutId = setTimeout(() => {
+                    this.noScroll = false
+                }, 2000)
+            });
         },
         watch: {
             // lrcLink(){
@@ -72,6 +99,30 @@
             //         console.log(this.lrcLink)
             //     }
             // }
+            currentTime() {
+                console.log(this.currentTime)
+                // 根据这个时间判断激活的歌词是哪一个
+
+                // 普通for循环
+                for (let i = 0; i < this.lrcContent.length; i++) {
+                    if (this.lrcContent[i].time > this.currentTime) {
+                        if (i > 0) {
+                            this.active = i - 1;
+                        }
+                        // // eslint-disable-next-line
+                        // debugger
+                        if (!this.noScroll) {
+                            this.$refs.list.scrollTop = this.$refs.list.children[this.active].offsetTop - 50;
+                        }
+                        break;
+                    }
+                }
+            }
+        },
+        methods: {
+            setProcess(time) {
+                this.$store.commit("setProcess", {process: time})
+            }
         }
     }
 </script>
@@ -85,6 +136,13 @@
             height: 100%;
             overflow: scroll;
             text-align: center;
+            // 设置容器为relative这个时候我们这个容器内部子元素的offsetHeight才是该元素到这个容器顶部的距离
+            position: relative;
+
+            .active {
+                font-size: 18px;
+                color: lightcoral;
+            }
         }
     }
 </style>

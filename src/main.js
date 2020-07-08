@@ -29,8 +29,13 @@ import VueAxios from 'vue-axios'
 // 把axios默认的实例赋给了它，我们通过这个实例发送请求的时候，使用的都是默认的配置，而不是我们封装好的配置
 Vue.use(VueAxios, axios)
 
+// 1. package.json 中main找
+// 2. 当前文件夹下的index.js文件
+import store from './store';
 
 new Vue({
     router,
+    // 挂载vuex到vue的实例上
+    store,
     render: h => h(App)
 }).$mount('#app')

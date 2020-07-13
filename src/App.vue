@@ -1,6 +1,8 @@
 <template>
     <div id="app">
-        <router-view />
+        <transition >
+            <router-view />
+        </transition>
     </div>
 </template>
 
@@ -18,5 +20,11 @@
     }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
+    .v-enter {
+        transform: translateX(50%);
+    }
+    .v-enter-active {
+        transition: all 1s ease;
+    }
 </style>

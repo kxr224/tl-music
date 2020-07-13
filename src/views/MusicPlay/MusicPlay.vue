@@ -2,10 +2,10 @@
     <div class="music-play-container" :style="{minHeight:height}">
         <div style="position: fixed; top: 0;left: 0;right: 0;bottom: 0;background-color:#f5f5f5;z-index: -1"></div>
         <Header :title="songInfo.title" />
-        <div class="cover">
-            <img :src="songInfo.pic_huge" alt="" :class="{turn:isPlay}">
+        <div class="cover" >
+            <img :src="songInfo.pic_huge" alt="" class="turn" :style="{'animation-play-state': isPlay}" >
         </div>
-        <Lrc v-if="songInfo.lrclink" :lrc-link="songInfo.lrclink" />
+        <Lrc v-if="songInfo.lrclink" :lrc-link="songInfo.lrclink"  />
         <MusicAction :file-link="bitrate.file_link" />
         <div style="display: flex;justify-content: center">
             <audio ref="audio" controls :src="bitrate.show_link"></audio>
@@ -34,7 +34,7 @@
                 songInfo: {},
                 // 歌曲的媒体信息
                 bitrate: {},
-                isPlay: false
+                isPlay: 'paused'
             }
         },
         created() {
@@ -49,10 +49,10 @@
                 this.$store.commit("setCurrentTime", {currentTime: this.$refs.audio.currentTime})
             })
             this.$refs.audio.addEventListener("play",  ()=> {   //开始播放时触发
-                this.isPlay = true
+                this.isPlay = 'running';
             });
             this.$refs.audio.addEventListener("pause",  ()=> {   // 暂停时会触发，当播放完一首歌曲时也会触发
-                this.isPlay = false
+                this.isPlay = 'paused'
             })
         },
         computed: {

@@ -47,6 +47,10 @@ const routes = [
                 component: () => import('../views/My.vue'),
                 meta: {
                     title: "我的"
+                },
+                beforeEnter: (to, from, next) => {
+                    console.log("组件内 before enter")
+                    next();
                 }
             },
             {
@@ -85,6 +89,17 @@ const router = new VueRouter({
     mode: 'hash',
     base: process.env.BASE_URL,
     routes
+})
+
+
+// 路由守卫
+router.beforeEach((to, from, next) => {
+    console.log("before")
+    next();
+});
+
+router.afterEach(()=>{
+    console.log("after")
 })
 
 export default router
